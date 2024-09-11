@@ -1,1 +1,255 @@
-<h1>Hello World</h1>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 1</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        .content {
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 1200px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        header {
+            background-color: #FFE5B4;
+            color: rgb(62, 62, 62);
+            padding: 20px;
+            text-align: center;
+        }
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+        .image-container img {
+            max-width: 30%;
+            height: 300px;
+        }
+        .container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .container img {
+            width: 30%;
+            height: auto;
+            margin-right: 20px;
+        }
+
+        .container p {
+            width: 70%;
+            text-align: justify;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* space between images */
+        }
+        .image-grid figure {
+            text-align: center;
+            flex-basis: calc(33.33% - 20px); /* Ensure 3 images per row with gap */
+            margin: 0;
+        }
+        .image-grid img {
+            width: 100%;
+            height: auto;
+        }
+        .image-grid figcaption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Project 1</h1>
+    <h2>Images of the Russian Empire: Colorizing the Prokudin-Gorskii photo collection</h2>
+</header>
+
+<div class="content">
+    <h2>Overview</h2>
+    <p>
+        The objective of this project is to take digitized images from Prokudin-Gorskii's glass 
+        plate collection and use image processing techniques to automatically create a color image with 
+        minimal visual artifacts. To achieve this, I needed to extract the three individual color channels 
+        (red, green, and blue) from each image, layer them on top of each other, and align them to form a single 
+        RGB image.
+    </p>
+    <p>
+        I started with a single-scale implementation to align the color channels in low-resolution images. For larger, 
+        high-resolution images, I used a multi-scale image pyramid approach to ensure efficient and accurate alignment. 
+        This method helped manage the larger file sizes while maintaining speed and precision.
+    </p>
+    
+    <div class="image-container">
+        <img src="media/cathedral.jpg">
+        <img src="media/emir.png">
+        <img src="media/lady.png">
+    </div>
+
+    <h2>Approach</h2>
+    <h3>Brute Force</h3>
+    <p>
+        In the brute force approach, I split the image into three equal parts corresponding to the blue, green, and red color channels. 
+        The goal was to align the green and red channels with the blue channel by trying various shifts in the x and y directions. 
+    </p>
+    <p>
+        However, this method didn’t always align the images properly, especially for larger or more complex images.
+        This brute force apporach wasn’t precise enough, resulting in misaligned color channels and noticeable visual artifacts. As seen in the image 
+        below, the channels didn’t line up correctly, producing a blurred and offset effect that negatively impacted the quality of the final color 
+        image. A more advanced and efficient alignment method was needed.
+    </p>
+    <img src="media/brute_force.jpg" alt="Brute Force Image of Cathedral" style="display: block; margin: 0 auto;">
+    <h3>SDD vs NCC</h3>
+    <p>
+        I explored two different methods for aligning the color channels: <strong>Sum of Squared 
+        Differences (SSD)</strong> and <strong>Normalized Cross-Correlation (NCC)</strong>.
+    </p>
+    <p>
+        During the alignment process, I encountered cases where the dimensions of the images were slightly different. To address this, I cropped the larger 
+        image to match the size of the smaller one. While this method ensures that the images can be compared directly, the downside is that we are losing 
+        some portions of the image data. However, the regions being cropped often consist of irrelevant information, such as borders or misaligned areas, 
+        which wouldn’t significantly affect the final result. I also added a timing feauture to see how long it took to run the program to compare the processing
+         time for SSD and NCC.
+    </p>
+
+    <h4>
+        Sum of Squared Differences (SSD):
+    </h4>
+    <p>
+        This method measures the difference between pixel intensities of two images and squares the result to penalize larger discrepancies. 
+        The SSD for two images  I1 and I2 and is calculated as
+    </p>
+    <p style="text-align:center;"><strong>SSD = &Sigma;(l<sub>1</sub>(x, y) - l<sub>2</sub>(x, y))<sup>2</sup></strong></p>
+    <p>
+        The alignment with the lowest SSD score indicates the best match. Since SSD is straightforward and computationally less expensive, 
+        it runs faster, making it a suitable choice for aligning images, especially when speed is critical. For example, the processing time for SSD took 0.19 seconds, 
+        which is <strong>57.78%</strong> faster than NCC's processsing time.
+    </p>
+    <figure style="text-align: center;">
+        <img src="media/ssd.jpg" alt="SSD Image of Cathedral" style="display: block; margin: 0 auto;">
+        <figcaption>SSD Image of Cathedral</figcaption>
+    </figure>
+
+    <h4>
+        Normalized Cross-Correlation (NCC):
+    </h4>
+    <p>
+        NCC compares the similarity between two images by normalizing their pixel intensities, which helps account for brightness differences. The NCC for images l1 and l2
+        is calculated as
+    </p>
+    <p style="text-align:center;"><strong>NCC = (&Sigma;(l<sub>1</sub>(x, y) - &#772;l<sub>1</sub>)(l<sub>2</sub>(x, y) - &#772;l<sub>2</sub>)) / &#8730;(&Sigma;(l<sub>1</sub>(x, y) - &#772;l<sub>1</sub>)<sup>2</sup> &Sigma;(l<sub>2</sub>(x, y) - &#772;l<sub>2</sub>)<sup>2</sup>)</strong></p>
+    <p>
+        While NCC is more robust, especially for images with varying lighting conditions, it is computationally more expensive due to the normalization process. 
+        This made it slower to run, particularly on larger images. For example, the processing time for NCC took 0.45 seconds, which is <strong>136.84%</strong> slower than SDD.
+    </p>
+    <figure style="text-align: center;">
+        <img src="media/ncc.jpg" alt="NCC Image of Cathedral" style="display: block; margin: 0 auto;">
+        <figcaption>NCC Image of Cathedral</figcaption>
+    </figure>
+
+    <h3>Multi-scale Pyramid</h3>
+    <div class="container">
+        <img src="media/index_pyramid.png" alt="Pyramid Image">
+        <p>
+            The multi-scale pyramid algorithm is for aligning two images using a coarse-to-fine strategy. The purpose of this approach is to handle large image alignments 
+            more efficiently by progressively aligning lower-resolution versions of the images first and then refining the alignment at higher resolutions. The code 
+            begins by recursively downscaling the images using a scale_factor, which generates progressively smaller versions of the images. 
+            At each level of the image pyramid, the algorithm computes a shift using the smaller versions and scales this shift back to the original resolution. The 
+            sdd_align function is then used to fine-tune the alignment at each level, ensuring precise alignment with minimal computational cost. This pyramid approach 
+            avoids the need for an exhaustive search at the full resolution, making it faster while still achieving accurate results. Finally, the combined shifts from 
+            all levels are applied to the original image to align it with the reference image. This method is particularly useful for large images, where aligning at full 
+            resolution in one pass would be computationally expensive and error-prone.
+        </p>
+    </div>
+    <h2>Results</h2>
+    <p>
+        Below is an example of the output:
+    </p>
+    <div class="image-grid">
+        <figure>
+            <img src="media/cathedral_pyramid.jpg" alt="cathedral_pyramid Image">
+            <figcaption>G: (0.5625, -1.0), R: (6.97271728515625, -0.5625)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/church_pyramid.jpg" alt="church_pyramid Image">
+            <figcaption>G: (0.0, -4.603737831115723), R: (52.19517326011555, -5.802715361118317)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/emir_pyramid.jpg" alt="emir_pyramid Image">
+            <figcaption>G: (-2.7863922119140625, 7.193035185337067), R: (106.89336597255897, 17.15535530820489)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/harvesters_pyramid.jpg" alt="harvesters_pyramid Image">
+            <figcaption>G: (118.35607355169486, -2.66973876953125), R: (120.05055935296696, 7.1518707275390625)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/icon_pyramid.jpg" alt="icon_pyramid Image">
+            <figcaption>G: (41.8315449465299, 16.0599946975708), R: (89.29949613718782, 22.416400983929634)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/lady_pyramid.jpg" alt="lady_pyramid Image">
+            <figcaption>G: (56.70532804384129, -5.679177284240723), R: (123.39175486349268, -17.490899142809212)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/melons_pyramid.jpg" alt="melons_pyramid Image">
+            <figcaption>G: (83.04476853518281, 4.326416015625), R: (175.7162757460028, 7.1518707275390625)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/monastery_pyramid.jpg" alt="monastery_pyramid Image">
+            <figcaption>G: (-6.15899658203125, 0.0), R: (9.2867431640625, 0.5625)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/onion_church_pyramid.jpg" alt="onion_church_pyramid Image">
+            <figcaption>G: (51.94555194268469, 22.460627630352974), R: (108.10875903896522, 34.919155929237604)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/sculpture_pyramid.jpg" alt="sculpture_pyramid Image">
+            <figcaption>G: (32.69627704867162, -10.58880239725113), R: (139.9334830508451, -25.986756473139394)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/self_portrait_pyramid.jpg" alt="self_portrait_pyramid Image">
+            <figcaption>G: (49.95917325868504, -1.623291015625), R: (130.45936793548753, -5.343341827392578)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/three_generations_pyramid.jpg" alt="three_generations_pyramid Image">
+            <figcaption>G: (52.14477069268469, 5.343341827392578), R: (108.17690137482714, 7.395297288894653)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/tobolsk_pyramid.jpg" alt="tobolsk_pyramid Image">
+            <figcaption>G: (3.12890625, 1.87890625), R: (5.72149658203125, 2.935791015625)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/train_pyramid.jpg" alt="train_pyramid Image">
+            <figcaption>G: (111.49755465233466, -7.395297288894653), R: (106.92690137482714, 1.25)</figcaption>
+        </figure>
+    </div>    
+</div>
+
+</body>
+</html>
