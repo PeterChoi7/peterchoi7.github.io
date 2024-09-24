@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 2</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .content {
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 1200px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            background-color: #FFE5B4;
+            color: rgb(62, 62, 62);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .image-container img {
+            width: 100%; /* Default to full width */
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .image-container figure {
+            text-align: center;
+            flex: 1; /* Ensures images grow equally */
+            max-width: calc(33.33% - 20px); /* Set a maximum width for images when there are multiple */
+        }
+        
+        .image-container.single img {
+            width: 100%; /* Stretch single image to fill the container */
+        }
+        
+        .container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .container img {
+            width: 30%;
+            height: auto;
+            margin-right: 20px;
+        }
+        
+        .container p {
+            width: 70%;
+            text-align: justify;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Space between images */
+        }
+        
+        .image-grid figure {
+            text-align: center;
+            flex-basis: calc(33.33% - 20px); /* Ensure 3 images per row with gap */
+            margin: 0;
+        }
+        
+        .image-grid img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .image-grid figcaption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Project 2</h1>
+    <h2>Fun with Filters and Frequencies!</h2>
+</header>
+
+<div class="content">
+    <h2>Overview</h2>
+    <p>
+        In this project, I will explore image processing techniques focused on filters and frequency analysis. I'll start by 
+        applying 2D convolutions to detect edges using finite difference operators and Gaussian filters, followed by creating 
+        sharpened images using unsharp masking. Then, I’ll create hybrid images by blending the high and low frequencies of 
+        different images, allowing them to change in interpretation based on viewing distance. Finally, I will implement 
+        multiresolution blending using Gaussian and Laplacian stacks to seamlessly merge two images, such as blending an 
+        apple and an orange. Throughout, I'll experiment with different filters and techniques to gain a deeper understanding 
+        of image manipulation.
+    </p>
+
+    <h2>Part 1: Fun with Filters</h2>
+    <div class="image-container">
+        <figure>
+            <img src="media/cameraman_original.png" alt="Original Image">
+            <figcaption>Original Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/cameraman_smoothed.png" alt="Blurred Image">
+            <figcaption>Smoothed Image</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/cameraman_gradient_magnitude.png" alt="Sharpened Image">
+            <figcaption>Gradient Magnitude</figcaption>
+        </figure>
+        <figure>
+            <img src="media/cameraman_edges.png" alt="Sharpened Image">
+            <figcaption>Edges</figcaption>
+        </figure>
+    </div>
+    <p>
+        The main difference between the original finite difference and the DoG method is the level of noise to find the edges. 
+        The finite difference operator tends to highlight not only the true edges but also the noise in the image, especially 
+        in regions with small intensity variations, when applied without any smoothing. This often leads to a noisy 
+        edge detection. The DoG method first applies Gaussian smoothing to the image, which effectively 
+        reduces noise before detecting edges. This makes the edges much cleaner and more distinct, with less false edges caused by noise.
+    </p>
+    <p>
+        The results obtained using the Derivative of Gaussian filters are very similar to those obtained through the two-step approach of 
+        applying Gaussian smoothing with finite difference operators. The reason for this is that the Derivative of Gaussian filters 
+        combine both smoothing and differentiation into a single operation. This approach achieves the same objective of reducing noise and 
+        detecting edges in a single convolution.
+    </p>
+
+
+    <h2>Part 2: Fun with Frequencies!</h2>
+    <h3>Image "Sharpening"</h3>
+    <p>
+        Progression of the original image to the sharpened image
+    </p>
+    <div class="image-container">
+        <figure>
+            <img src="media/taj_original_image.png" alt="Original Image">
+            <figcaption>Original Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/taj_blurred_image.png" alt="Blurred Image">
+            <figcaption>Blurred Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/taj_sharpened_image.png" alt="Sharpened Image">
+            <figcaption>Sharpened Image</figcaption>
+        </figure>
+    </div>
+    
+    <div class="image-container">
+        <figure>
+            <img src="media/berkeley_original_image.png" alt="Original Image">
+            <figcaption>Original Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/berkeley_blurred_image.png" alt="Blurred Image">
+            <figcaption>Blurred Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/berkeley_sharpened_image.png" alt="Sharpened Image">
+            <figcaption>Sharpened Image</figcaption>
+        </figure>
+    </div>
+    <h3>Hybrid Images</h3>
+    <p>
+        Fourier analysis in hybrid images helps visualize the distribution of different frequency components, which 
+        affects how we perceive the image. Low-frequency components represent smooth variations and broad features, 
+        visible when the image is viewed from a distance. High-frequency components capture fine details and edges, 
+        dominating perception when viewed up close. By applying low-pass and high-pass filters to two images, you can 
+        blend their frequency content, creating a hybrid image that changes interpretation based on viewing distance. 
+        Fourier analysis reveals how the frequencies from both images combine, showing the balance between low and 
+        high-frequency content in the final hybrid image.
+    </p>
+    <h4>
+        Cat and Derek
+    </h4>
+    <div class="image-container">
+        <figure>
+            <img src="media/DerekPicture.jpg" alt="Original Image 1">
+            <figcaption>Low Frequency Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/nutmeg.jpg" alt="Original Image 2">
+            <figcaption>High Frequency Image</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/org_hybrid.png" alt="Hybrid Image">
+            <figcaption>Hybrid Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/org_hybrid_fourier.png" alt="Fourier Analysis">
+            <figcaption>Fourier Analysis</figcaption>
+        </figure>
+    </div>
+
+    <h4>
+        Old and Yound
+    </h4>
+    
+    <div class="image-container">
+        <figure>
+            <img src="media/kid.png" alt="Original Image 1">
+            <figcaption>Low Frequency Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/old.png" alt="Original Image 2">
+            <figcaption>High Frequency Image</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/kid_old_hybrid.png" alt="Hybrid Image">
+            <figcaption>Hybrid Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/kid_old_fourier.png" alt="Fourier Analysis">
+            <figcaption>Hybrid Image</figcaption>
+        </figure>
+    </div>
+
+    <h4>
+        Spiderman and Peter Parker
+    </h4>
+
+    <div class="image-container">
+        <figure>
+            <img src="media/spiderman.jpg" alt="Original Image 1">
+            <figcaption>Low Frequency Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/peter_parker.jpg" alt="Original Image 2">
+            <figcaption>High Frequency Image</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/spiderman_hybrid.png" alt="Hybrid Image">
+            <figcaption>Hybrid Image</figcaption>
+        </figure>
+        <figure>
+            <img src="media/spiderman_fourier.png" alt="Fourier Analysis">
+            <figcaption>Hybrid Image</figcaption>
+        </figure>
+    </div>
+
+    <h3>
+        Multi-resolution Blending
+    </h3>
+    <p>
+        I implemented both Gaussian and Laplacian stacks from scratch, without using any built-in pyramid functions. The Gaussian stack was 
+        created by applying a Gaussian filter iteratively at each level without downsampling, resulting in images that retain the original 
+        dimensions across all levels. The Laplacian stack was generated by subtracting consecutive levels of the Gaussian stack, capturing 
+        the high-frequency components of the image at each level.
+    </p>
+    <div class="image-container">
+        <img src="media/gaussian.png" >
+    </div>
+    <div class="image-container">
+        <img src="media/laplacian.png" >
+    </div>
+    
+    <h3>
+        Blending
+    </h3>
+    <h4>
+        Orapple
+    </h4>
+    <div class="image-container">
+        <figure>
+            <img src="media/orange.jpeg" alt="Original Image 1">
+            <figcaption>Orange</figcaption>
+        </figure>
+        <figure>
+            <img src="media/apple.jpeg" alt="Original Image 2">
+            <figcaption>Apple</figcaption>
+        </figure>
+        <figure>
+            <img src="media/orapple.png" alt="Original Image 2">
+            <figcaption>Blend</figcaption>
+        </figure>
+    </div>
+    <h4>
+        Soccer ball and Baseball
+    </h4>
+    <div class="image-container">
+        <figure>
+            <img src="media/soccerball.png" alt="Original Image 1">
+            <figcaption>Soccer Ball</figcaption>
+        </figure>
+        <figure>
+            <img src="media/baseball.png" alt="Original Image 2">
+            <figcaption>Baseball</figcaption>
+        </figure>
+        <figure>
+            <img src="media/soccer_base_ball.png" alt="Original Image 2">
+            <figcaption>Blend</figcaption>
+        </figure>
+    </div>
+    <h4>
+        Irregular Blending
+    </h4>
+    <div class="image-container">
+        <figure>
+            <img src="media/wall.png" alt="Original Image 1">
+            <figcaption>Wall</figcaption>
+        </figure>
+        <figure>
+            <img src="media/nature.png" alt="Original Image 2">
+            <figcaption>Tree</figcaption>
+        </figure>
+        <figure>
+            <img src="media/tree_wall.png" alt="Original Image 2">
+            <figcaption>Blend</figcaption>
+        </figure>
+    </div>
+</div>
+
+</body>
+</html>
