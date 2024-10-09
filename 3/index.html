@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 2</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .content {
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 1200px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            background-color: #FFE5B4;
+            color: rgb(62, 62, 62);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .image-container img {
+            width: 100%; /* Default to full width */
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .image-container figure {
+            text-align: center;
+            flex: 1; /* Ensures images grow equally */
+            max-width: calc(33.33% - 20px); /* Set a maximum width for images when there are multiple */
+        }
+        
+        .image-container.single img {
+            width: 100%; /* Stretch single image to fill the container */
+        }
+        
+        .container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .container img {
+            width: 30%;
+            height: auto;
+            margin-right: 20px;
+        }
+        
+        .container p {
+            width: 70%;
+            text-align: justify;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px; /* Space between images */
+        }
+        
+        .image-grid figure {
+            text-align: center;
+            flex-basis: calc(33.33% - 20px); /* Ensure 3 images per row with gap */
+            margin: 0;
+        }
+        
+        .image-grid img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .image-grid figcaption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Project 3</h1>
+    <h2>Face Morphing</h2>
+</header>
+
+<div class="content">
+    <h2>Overview</h2>
+    <p>
+        In this assignment, I'll create a morph animation that transitions my face into someone else's face. A morph 
+        involves warping the shape of both images and blending their colors. I'll start by taking a picture of myself 
+        on a uniform background, making sure it's the same size and aspect ratio as my target face. Next, I'll morph 
+        my face (Picture A) into the target face (Picture B) by producing 45 frames, with frame 0 being my original 
+        face and frame 45 being the target face. I'll then create a video or animated GIF of the sequence, playing at 
+        30 frames per second.
+    </p>
+
+    <h2>Part 1. Defining Correspondences</h2>
+    <div class="image-container">
+        <figure>
+            <img src="media/messi.jpg" alt="Original Image">
+            <figcaption>Original Image (Messi)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/obama.jpg" alt="Blurred Image">
+            <figcaption>Original Image (Obama)</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/keypoints.png" alt="Sharpened Image">
+            <figcaption>Gradient Magnitude</figcaption>
+        </figure>
+    </div>
+
+    <h2>Part 2. Computing the "Mid-way Face</h2>
+    <div class="image-container">
+        <figure>
+            <img src="media/messi.jpg" alt="Original Image">
+            <figcaption>Original Image (Messi)</figcaption>
+        </figure>
+        <figure>
+            <img src="media/obama.jpg" alt="Blurred Image">
+            <figcaption>Original Image (Obama)</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/obessi.png" alt="Sharpened Image">
+            <figcaption>Midway Face</figcaption>
+        </figure>
+    </div>
+
+    <h2>Part 3. The Morph Sequence</h2>
+
+    <div class="image-container">
+        <video width="320" height="240" controls> 
+            <source src="morph.mp4" type="video/mp4">
+            <source src="morph.ogg" type="video/ogg">
+            Your browser does not support the video tag. 
+        </video>
+    </div>
+    <p>
+        <a href="https://youtube.com/shorts/5DBYk5dubJQ?feature=share">Video Link (YouTube)</a>
+    </p>
+
+    <h2>Part 4. The "Mean face" of a population</h2>
+    <div class="image-container">
+            <img src="media/population.png" alt="Original Image" style="width: 150%; height: 100%;">
+            <img src="media/population2.png" alt="Original Image" style="width: 150%; height: 100%;">
+    </div>    
+
+    <h3>Mean Face</h3>
+
+    <div class="image-container">
+        <figure>
+            <img src="media/average_face.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Face</figcaption>
+        </figure>
+    </div>
+
+    <h2>Part 5. Caricatures: Extrapolating from the mean</h2>
+    <div class="image-container">
+        <figure>
+            <img src="media/average_face.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Face</figcaption>
+        </figure>
+        <figure>
+            <img src="media/peter.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Face of my face</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/morphed_peter.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Face with my face</figcaption>
+        </figure>
+    </div>
+
+    <h2>Bell and Whistle</h2>
+    <p>
+        For the Bell and Whistle part of the project, I’ve chosen to blend my face with the average face of 
+        an older male. This involves aligning key facial features, such as the eyes, nose, and mouth, between 
+        my face and the average. I will then apply a smooth morph that combines both the shape and appearance 
+        of my features with those typical of the older male population. This process allows me to explore how 
+        my face would appear with the average characteristics of that demographic. The result will showcase 
+        the flexibility of the morphing algorithm in blending individual and population-based traits.
+    </p>
+    <div class="image-container">
+        <figure>
+            <img src="media/oldface.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Old Face</figcaption>
+        </figure>
+        <figure>
+            <img src="media/peter.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Face of my face</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/peter_old.png" alt="Sharpened Image">
+            <figcaption>Mean (Average) Old Face with my face</figcaption>
+        </figure>
+    </div>
+
+
+</body>
+</html>
