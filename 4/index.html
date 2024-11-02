@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Project 4</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+        
+        .content {
+            padding: 20px;
+            margin: 10px auto;
+            max-width: 1200px;
+            background-color: white;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        header {
+            background-color: #FFE5B4;
+            color: rgb(62, 62, 62);
+            padding: 20px;
+            text-align: center;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            margin-top: 20px;
+        }
+        
+        .image-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .image-container img {
+            width: 100%;
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .image-container figure {
+            text-align: center;
+            flex: 1;
+            max-width: calc(33.33% - 20px);
+        }
+        
+        .image-container.single img {
+            width: 100%;
+        }
+        
+        .container {
+            display: flex;
+            align-items: center;
+            margin: 20px 0;
+        }
+        
+        .container img {
+            width: 30%;
+            height: auto;
+            margin-right: 20px;
+        }
+        
+        .container p {
+            width: 70%;
+            text-align: justify;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+        
+        .image-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        
+        .image-grid figure {
+            text-align: center;
+            flex-basis: calc(33.33% - 20px);
+            margin: 0;
+        }
+        
+        .image-grid img {
+            width: 100%;
+            height: auto;
+        }
+        
+        .image-grid figcaption {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #333;
+        }
+        .equation {
+            font-style: italic;
+            background-color: #f4f4f4;
+            padding: 5px;
+            display: inline-block;
+            border-radius: 5px;
+        }
+    </style>
+
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+
+<body>
+
+<header>
+    <h1>Project 4</h1>
+</header>
+
+<div class="content">
+    <h2>Overview</h2>
+    <p>
+        This project involves creating an image mosaic from multiple photographs by aligning, warping, and blending them. 
+        The key steps include capturing images with overlapping fields of view, recovering the homographies between image 
+        pairs using corresponding points, and applying projective transformations to align them. The images are then warped 
+        using computed homographies and blended together into a seamless mosaic, avoiding sharp edges by using weighted 
+        averaging or advanced techniques like Laplacian pyramid blending. The project also includes tasks like image 
+        rectification, where homographies are used to transform objects into a rectangular shape, ensuring accurate warping 
+        and alignment.
+    </p>
+
+    <h2>Algorithm</h2>
+    <h3>Homography Equation</h3>
+    <p>
+        We set up a system of linear equations for each pair of corresponding points as follows:
+    </p>
+    <p>
+        \[
+        \begin{aligned}
+        x'(a_1x + a_2y + a_3) &= a_7x + a_8y + 1 \\
+        y'(a_4x + a_5y + a_6) &= a_7x + a_8y + 1
+        \end{aligned}
+        \]
+    </p>
+    <p>
+        We solve this overdetermined system using singular value decomposition (SVD) to find the homography matrix \( H \).
+    </p>
+
+    <h3>Warping the Image</h3>
+    <p>Once the homography is known, the second image is warped into the coordinate space of the first image. This is done by applying the transformation:</p>
+    <p>
+        \[
+        p' = H p
+        \]
+    </p>
+    <p>
+        We compute the bounding box of the warped image by transforming its corners to ensure that the warped image fits into the output space.
+    </p>
+
+    <h3>Blending the Images</h3>
+    <p>
+        To avoid hard edges between the images, we use alpha masks for blending. The alpha mask is 1 at the center and 
+        falls off towards the edges. The images are blended using weighted averaging based on their alpha masks:
+    </p>
+    <p>
+        \[
+        \text{output} = \frac{\alpha_1 \cdot \text{image}_1 + \alpha_2 \cdot \text{image}_2}{\alpha_1 + \alpha_2}
+        \]
+    </p>
+
+
+    <h2>Rectification Results</h2>
+    <h3>Corona Sign</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/corona_middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/corona_right.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/corona_refactored.png" alt="Sharpened Image">
+            <figcaption>Refactored Image</figcaption>
+        </figure>
+    </div>
+
+    <h3>Banksy</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/banksy_left.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/banksy_right.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/banksy_refactored.png" alt="Sharpened Image">
+            <figcaption>Refactored Image</figcaption>
+        </figure>
+    </div>
+
+    <h3>Composite</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/composite_middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/composite_left.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/composite_mosiac.png" alt="Sharpened Image">
+            <figcaption>Refactored Image</figcaption>
+        </figure>
+    </div>
+
+    <h2>Mosaic Results</h2>
+    <h3>Composite</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/composite_middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/composite_left.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/composite_mosaic .png" alt="Sharpened Image">
+            <figcaption>Refactored Image</figcaption>
+        </figure>
+    </div>
+    <h3>View</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/left.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/view_mosaic.png" alt="Sharpened Image">
+            <figcaption>Refactored Image</figcaption>
+        </figure>
+    </div>
+    <h3>Corona</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/corona_middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/corona_right.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/corona_mosaic.png" alt="Sharpened Image">
+            <figcaption>Refactored Image</figcaption>
+        </figure>
+    </div>
+
+    <h1>Feature Matching for Auto-Stitching: Project Report</h1>
+
+    <h2>Overview</h2>
+    <p>
+        This project implements an automated image stitching pipeline by matching features between overlapping images to 
+        generate a seamless mosaic. The project follows the steps in Brown et al.'s research paper, “Multi-Image Matching 
+        using Multi-Scale Oriented Patches,” and involves detecting corner features, extracting descriptors, matching 
+        features, computing a robust homography using RANSAC, and creating the final mosaic.
+    </p>
+    
+    <h2>Algorithm</h2>
+    
+    <h3>Step 1: Harris Corner Detection</h3>
+    <p>
+        The Harris Corner Detector identifies corners in each image, which serve as candidate points for feature matching. 
+        This process involves computing the Harris response at each pixel and selecting prominent corner points.
+    </p>
+    
+    <p><strong>Harris Response Calculation:</strong></p>
+    <p>
+        Given a grayscale image \( I(x, y) \), the Harris response \( R \) at a point \( (x, y) \) is calculated as:
+    </p>
+    <p>
+        \[
+        R = \det(M) - k \cdot (\text{trace}(M))^2
+        \]
+    </p>
+    <p>where:</p>
+    <ul>
+        <li>
+            \( M \) is the structure tensor:
+            \[
+            M = \begin{bmatrix} I_x^2 & I_x I_y \\ I_x I_y & I_y^2 \end{bmatrix}
+            \]
+        </li>
+        <li>\( k \) is a sensitivity constant, typically around 0.04.</li>
+    </ul>
+    <p>
+        The strongest corners are selected based on peak local maxima in \( R \), constrained to a 
+        minimum distance to avoid overlapping detections.
+    </p>
+    
+    <h3>Step 2: Adaptive Non-Maximal Suppression (ANMS)</h3>
+    <p>
+        ANMS is applied to refine corner selection by suppressing weaker corners near stronger ones, ensuring a more even 
+        distribution of points.
+    </p>
+    
+    <p><strong>ANMS Radius Calculation:</strong></p>
+    <p>
+        For each corner \( i \), the suppression radius \( r_i \) is defined as the minimum distance to a stronger corner \( j \):
+    </p>
+    <p>
+        \[
+        r_i = \min_{j} \{ d(i, j) \} \quad \text{such that } R_j > R_i
+        \]
+    </p>
+    <p>
+        The strongest points with the largest radii are retained as final feature points.
+    </p>
+    
+    <h3>Step 3: Feature Descriptor Extraction</h3>
+    <p>
+        Feature descriptors are computed for each selected corner to facilitate robust matching. For simplicity, descriptors 
+        are axis-aligned patches sampled from a 40x40 window around each corner.
+    </p>
+    
+    <p><strong>Descriptor Normalization:</strong></p>
+    <p>
+        Each 8x8 patch is extracted and normalized to account for differences in illumination:
+    </p>
+    <p>
+        \[
+        \text{normalized\_patch} = \frac{\text{patch} - \text{mean}(\text{patch})}{\text{std}(\text{patch})}
+        \]
+    </p>
+    
+    <h3>Step 4: Feature Matching</h3>
+    <p>
+        Using the extracted descriptors, pairs of features that appear similar are matched. Matches are determined based on 
+        the Euclidean distance between descriptors, with Lowe's ratio test used to select the best pairs.
+    </p>
+    
+    <p><strong>Ratio Test:</strong></p>
+    <p>
+        For each descriptor in image 1, its nearest and second-nearest neighbors in image 2 are identified, with a match 
+        accepted if:
+    </p>
+    <p>
+        \[
+        \frac{d_{\text{nearest}}}{d_{\text{second\_nearest}}} < \text{threshold}
+        \]
+    </p>
+    <p>
+        where \( d \) denotes Euclidean distance and the threshold is chosen based on Lowe's recommendations.
+    </p>
+    
+    <h3>Step 5: Homography Estimation with RANSAC</h3>
+    <p>
+        Using RANSAC, a robust homography matrix \( H \) is computed to map points from one image 
+        to another, effectively aligning them for stitching.
+    </p>
+    
+    <p><strong>Homography Matrix Calculation:</strong></p>
+    <p>
+        For a set of matched points \(\{(x, y), (x', y')\}\), the homography \( H \) relates these points as:
+    </p>
+    <p>
+        \[
+        \begin{bmatrix} x' \\ y' \\ 1 \end{bmatrix} = H \cdot \begin{bmatrix} x \\ y \\ 1 \end{bmatrix}
+        \]
+    </p>
+    <p>
+        Expanding this in terms of elements of \( H \):
+    </p>
+    <p>
+        \[
+        \begin{aligned}
+        x' &= \frac{h_{11}x + h_{12}y + h_{13}}{h_{31}x + h_{32}y + h_{33}} \\
+        y' &= \frac{h_{21}x + h_{22}y + h_{23}}{h_{31}x + h_{32}y + h_{33}}
+        \end{aligned}
+        \]
+    </p>
+    <p>
+        The homography matrix is computed by solving a linear system derived from a set of these correspondences, with 
+        inliers selected using the RANSAC algorithm to improve robustness.
+    </p>
+    
+    <h3>Step 6: Image Warping and Mosaic Creation</h3>
+    <p>
+        Once the homography is estimated, the images are warped and overlaid to form a mosaic.
+    </p>
+    
+    <p><strong>Bounding Box Calculation:</strong></p>
+    <p>
+        The transformed corners of the second image under \( H \) define the extent of the mosaic:
+    </p>
+    <p>
+        \[
+        \text{corner}_{\text{warped}} = H \cdot \text{corner}_{\text{original}}
+        \]
+    </p>
+    <p>
+        The output size is determined by the bounding box covering both images.
+    </p>
+    
+    <p><strong>Alpha Blending:</strong></p>
+    <p>
+        An alpha mask smooths the transition between images, blending overlapping regions for seamless integration.
+    </p>
+    <p>
+        \[
+        \text{output} = \frac{\alpha_1 \cdot \text{image}_1 + \alpha_2 \cdot \text{image}_2}{\alpha_1 + \alpha_2}
+        \]
+    </p>
+    
+    <h2>Results</h2>
+    <h3>Composite</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/composite_middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/composite_left.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/composite_2.png" alt="Sharpened Image">
+            <figcaption>Feature Matching</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/composite_mosaic .png" alt="Sharpened Image">
+            <figcaption>Result</figcaption>
+        </figure>
+    </div>
+    <h3>View</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/left.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/view_2.png" alt="Sharpened Image">
+            <figcaption>Feature Matching</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/view_mosaic.png" alt="Sharpened Image">
+            <figcaption>Result</figcaption>
+        </figure>
+    </div>
+    <h3>Corona</h3>
+    <div class="image-container">
+        <figure>
+            <img src="media/corona_middle.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+        <figure>
+            <img src="media/corona_right.png" alt="Sharpened Image">
+            <figcaption>Original Images</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/corona_2.png" alt="Sharpened Image">
+            <figcaption>Feature Matching</figcaption>
+        </figure>
+    </div>
+    <div class="image-container">
+        <figure>
+            <img src="media/corona_mosaic.png" alt="Sharpened Image">
+            <figcaption>Result</figcaption>
+        </figure>
+    </div>
+    </ul>
+</body>
+</html>
